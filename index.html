@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zayavka.ibas</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js">
+    </script>
+
+    <style>
+        /* ============================================================
+               ROOT — ТЁМНАЯ ТЕМА + НЕОН
+               ============================================================ */
+        :root {
+            --bg-primary: #0b0f1a;
+            --bg-secondary: #131a2b;
+            --bg-card: rgba(22, 32, 52, 0.75);
+            --bg-card-hover: rgba(30, 44, 72, 0.85);
+            --text-primary: #e8edf5;
+            --text-secondary: #94a9c9;
+            --text-muted: #5e7496;
+            --accent: #6c8cff;
+            --accent-glow: rgba(108, 140, 255, 0.25);
+            --accent-secondary: #b388ff;
+            --success: #69db7c;
+            --warning: #ffd93d;
+            --danger: #ff6b6b;
+            --border-color: rgba(108, 140, 255, 0.15);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --radius: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(108, 140, 255, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(179, 136, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(108, 140, 255, 0.03) 0%, transparent 40%);
+        }
+
+        /* ============================================================
+               ШАПКА
+               ============================================================ */
+        .header {
+            background: rgba(11, 15, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 2rem 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 .emoji {
+            -webkit-text-fill-color: initial;
+        }
+
+        .header p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+            font-weight: 400;
+        }
+
+        /* ============================================================
+               НАВИГАЦИЯ
+               ============================================================ */
+        .nav {
+            background: rgba(19, 26, 43, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 0.4rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            transition: var(--transition);
+        }
+
+        .nav a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+        .nav a.active {
+            color: var(--text-primary);
+        }
+
+        .nav a.active::after {
+            width: 100%;
+        }
+
+        /* ============================================================
+               КОНТЕЙНЕР
+               ============================================================ */
+        .container {
+            flex: 1;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        /* ============================================================
+               СТРАНИЦЫ
+               ============================================================ */
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================================
+               КАРТОЧКИ (Glassmorphism)
+               ============================================================ */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem 2.2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(108, 140, 255, 0.25);
+        }
+
+        .card h2 {
+            color: var(--text-primary);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            letter-spacing: -0.3px;
+        }
+
+        .card h2 .icon {
+            margin-right: 0.4rem;
+        }
+
+        /* ============================================================
+               ФОРМА
+               ============================================================ */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: var(--text-primary);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ============================================================
+               КНОПКИ
+               ============================================================ */
+        .btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: #fff;
+            border: none;
+            padding: 0.8rem 2.4rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e03131, #c92a2a);
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.35);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2b8a3e, #1e7a5e);
+            box-shadow: 0 4px 20px rgba(105, 219, 124, 0.15);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 32px rgba(105, 219, 124, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #e67700, #d9480f);
+            box-shadow: 0 4px 20px rgba(255, 217, 61, 0.15);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .btn-sm {
+            padding: 0.3rem 1.2rem;
+            font-size: 0.8rem;
+            border-radius: 30px;
+        }
+
+        /* ============================================================
+               ЗАЯВКИ (список)
+               ============================================================ */
+        .request-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent);
+            padding: 1.2rem 1.6rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .request-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--border-color);
+            transform: translateX(4px);
+        }
+
+        .request-item h3 {
+            color: var(--text-primary);
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .request-item .desc {
+            color: var(--text-secondary);
+            margin: 0.3rem 0 0.6rem;
+            line-height: 1.5;
+        }
+
+        .request-item .meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.2rem;
+        }
+
+        .request-item .meta span {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.9rem;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .request-item .status-badge {
+            display: inline-block;
+            padding: 0.15rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-new {
+            background: rgba(108, 140, 255, 0.2);
+            color: var(--accent);
+        }
+
+        .status-inwork {
+            background: rgba(255, 217, 61, 0.15);
+            color: var(--warning);
+        }
+
+        .status-done {
+            background: rgba(105, 219, 124, 0.15);
+            color: var(--success);
+        }
+
+        .request-actions {
+            margin-top: 0.7rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .empty-msg {
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 0.8rem 0;
+        }
+
+        /* ============================================================
+               СТРАНИЦА "О НАС"
+               ============================================================ */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .about-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem 1.8rem 1.8rem;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
+        }
+
+        .about-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ★★★ БЛОК ДЛЯ ФОТО ★★★ */
+        .about-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 0.8rem;
+            display: block;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+            background: var(--bg-secondary);
+            transition: var(--transition);
+        }
+
+        .about-photo:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 50px var(--accent-glow);
+        }
+
+        .about-card h3 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+        }
+
+        .about-card .role {
+            color: var(--accent-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0.2rem 0 0.5rem;
+        }
+
+        .about-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .about-footer {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .about-footer strong {
+            color: var(--accent);
+        }
+
+        /* ============================================================
+               ЛОАДЕР
+               ============================================================ */
+        .loader {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================================
+               ФУТЕР
+               ============================================================ */
+        .footer {
+            background: rgba(11, 15, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        /* ============================================================
+               АДАПТИВ
+               ============================================================ */
+        @media (max-width: 720px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                gap: 1rem;
+                padding: 0.7rem 1.2rem;
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 1.7rem;
+            }
+
+            .card {
+                padding: 1.3rem;
+            }
+
+            .about-photo {
+                width: 110px;
+                height: 110px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1.2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .container {
+                padding: 0 0.8rem;
+            }
+
+            .nav a {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1.6rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ============================================================
+               SCROLLBAR
+               ============================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    ШАПКА
+    ============================================================ -->
+    <header class="header">
+        <h1><span class="emoji">☭</span>Заявки для Партии</h1>
+        <p>Подавай заявку - мы решаем вопросы!</p>
+    </header>
+
+    <!-- ============================================================
+    НАВИГАЦИЯ
+    ============================================================ -->
+    <nav class="nav">
+        <a data-page="home" class="active">🏠 Главная</a>
+        <a data-page="requests">📩 Все заявки</a>
+        <a data-page="about">👥 О ЦК КП НРТК(и)</a>
+    </nav>
+
+    <!-- ============================================================
+    КОНТЕНТ
+    ============================================================ -->
+    <main class="container">
+
+        <!-- ==========================================================
+        СТРАНИЦА 1 — ГЛАВНАЯ
+        ========================================================== -->
+        <section id="page-home" class="page active">
+            <div class="card">
+                <h2><span class="icon">📝</span> Оставить заявку</h2>
+                <form id="requestForm">
+                    <div class="form-group">
+                        <label for="name">Ваше имя *</label>
+                        <input type="text" id="name" placeholder="Например: Иван Петров" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="topic">Тема заявки *</label>
+                        <input type="text" id="topic" placeholder="Коротко о чём заявка" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Подробное описание *</label>
+                        <textarea id="description" placeholder="Опишите проблему или вопрос..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" id="submitBtn">✨ Отправить</button>
+                </form>
+                <div id="formMessage" style="margin-top: 1.2rem; font-weight: 600;"></div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">📊</span> Последние заявки</h2>
+                <div id="homePreview"><span class="loader"></span> Загрузка...</div>
+            </div>
+        </section>
+
+        <!-- ==========================================================
+        СТРАНИЦА 2 — ВСЕ ЗАЯВКИ
+        ========================================================== -->
+        <section id="page-requests" class="page">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+                    <h2><span class="icon">📩</span> Все заявки</h2>
+                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить все</button>
+                </div>
+                <div id="requestsList"><span class="loader"></span> Загрузка...</div>
+            </div>
+        </section>
+
+        <!-- ==========================================================
+        СТРАНИЦА 3 — О НАС
+        ========================================================== -->
+        <section id="page-about" class="page">
+            <div class="card">
+                <h2><span class="icon">👥</span> Кто мы?</h2>
+                <p style="color:var(--text-secondary); font-size:1.05rem; margin-bottom:1.2rem;">
+                    Мы - есть власть, а власть это слуги народа, ваши заявки очень важны для нас
+                </p>
+
+                <div class="about-grid">
+                    <!-- КАРТОЧКА СТАРОСТЫ -->
+                    <div class="about-card">
+                        <!-- ★★★ СЮДА ВСТАВЬ СВОЁ ФОТО ★★★ -->
+                        <img class="about-photo" src="https://sun9-17.vkuserphoto.ru/s/v1/ig2/IORI_VYUmjqV5V8IaCXFTIAMpz28ZC0iASpklvdavLXIWP9Q2QM27nM2-UButTckpDCNMOEA8HMjQWIgknPjgapU.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&u=cuOJ6TYdh-YuvP1KJedTDVspF0V3rnYP7CoggPK7nVQ&cs=768x0" alt="Фото старосты" />
+                        <h3>Староста</h3>
+                        <div class="role">⭐ Ответственный за всё</div>
+                        <p>
+                            Президентгубернаторгенераладмиралгенералисимус и великий вождь, и просто пахан в группе, держит все в своей левой руке, потому что правая это староста
+                        </p>
+                    </div>
+
+                    <!-- КАРТОЧКА ЗАМЕСТИТЕЛЯ -->
+                    <div class="about-card">
+                        <!-- ★★★ СЮДА ВСТАВЬ ФОТО ДРУГА ★★★ -->
+                        <img class="about-photo" src="https://sun9-71.vkuserphoto.ru/s/v1/ig2/_QtRpxxGtVjvqh5sIE7z_Q5Qm8-3rV01l4cnnFaVuVgSLsooC6q-W27BXEW9M4JeOlhcaNK_XZROpLSsMgcnEms1.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&cs=768x0" alt="Фото заместителя" />
+                        <h3>Зам. старосты</h3>
+                        <div class="role">⚡ Правая рука старосты</div>
+                        <p>
+                            Помогает Старосте как может, что-то делает и хз как ему досталась эта должность.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="about-footer">
+                    📌 Все заявки обрабатываются в течение <strong>67 часов</strong>.<br />
+                    Если вопрос срочный — пишите в личные сообщения.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================
+    ФУТЕР
+    ============================================================ -->
+    <footer class="footer">
+        © Сайт сделан партией КП НРТК(и)
+    </footer>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        // ================================================================
+        //  FIREBASE КОНФИГ
+        // ================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC0Nnusx7snGnAW8T-3YzD6p9mJFUi4PSo",
+            authDomain: "starosta-requests.firebaseapp.com",
+            projectId: "starosta-requests",
+            storageBucket: "starosta-requests.firebasestorage.app",
+            messagingSenderId: "437159715612",
+            appId: "1:437159715612:web:74d85acb669b52099790d9",
+            measurementId: "G-ZEG88WM655"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        db.enablePersistence()
+            .then(() => console.log('🔥 Офлайн-режим включён'))
+            .catch((err) => console.warn('Офлайн не включён:', err));
+
+        const COLLECTION = 'requests';
+
+        // ================================================================
+        //  УТИЛИТЫ
+        // ================================================================
+        function formatDate(ts) {
+            if (!ts) return '—';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ================================================================
+        //  CRUD
+        // ================================================================
+        async function addRequest(name, group, topic, desc) {
+            const data = {
+                name: name.trim(),
+                group: group.trim() || 'Не указана',
+                topic: topic.trim(),
+                description: desc.trim(),
+                status: 'new',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection(COLLECTION).add(data);
+                return { success: true };
+            } catch (e) {
+                console.error(e);
+                return { success: false, error: e.message };
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                await db.collection(COLLECTION).doc(id).update({
+                    status: newStatus,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                return { success: true };
+            } catch (e) {
+                console.error(e);
+                return { success: false, error: e.message };
+            }
+        }
+
+        async function deleteRequest(id) {
+            try {
+                await db.collection(COLLECTION).doc(id).delete();
+                return { success: true };
+            } catch (e) {
+                console.error(e);
+                return { success: false, error: e.message };
+            }
+        }
+
+        async function deleteAllRequests() {
+            if (!confirm('🗑️ Удалить ВСЕ заявки безвозвратно?')) return;
+            try {
+                const snap = await db.collection(COLLECTION).get();
+                const batch = db.batch();
+                snap.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                return { success: true };
+            } catch (e) {
+                console.error(e);
+                return { success: false, error: e.message };
+            }
+        }
+
+        // ================================================================
+        //  РЕНДЕР СПИСКА
+        // ================================================================
+        function renderRequestsList() {
+            const container = document.getElementById('requestsList');
+            db.collection(COLLECTION)
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snap) => {
+                    if (snap.empty) {
+                        container.innerHTML =
+                            `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const id = doc.id;
+                        const statusMap = { 'new': '🟡 Новая', 'inwork': '🔵 В работе', 'done': '✅ Готово' };
+                        const statusClassMap = { 'new': 'status-new', 'inwork': 'status-inwork', 'done': 'status-done' };
+                        const stText = statusMap[d.status] || d.status;
+                        const stClass = statusClassMap[d.status] || '';
+
+                        html += `
+                                <div class="request-item" data-id="${id}">
+                                    <h3>${escapeHtml(d.topic)}</h3>
+                                    <div class="desc">${escapeHtml(d.description)}</div>
+                                    <div class="meta">
+                                        <span>👤 ${escapeHtml(d.name)}</span>
+                                        <span>📚 ${escapeHtml(d.group)}</span>
+                                        <span>🕐 ${formatDate(d.createdAt)}</span>
+                                        <span class="status-badge ${stClass}">${stText}</span>
+                                    </div>
+                                    <div class="request-actions">
+                                        <button class="btn btn-warning btn-sm status-btn" data-id="${id}" data-status="inwork">📌 В работу</button>
+                                        <button class="btn btn-success btn-sm status-btn" data-id="${id}" data-status="done">✅ Готово</button>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${id}">🗑️ Удалить</button>
+                                    </div>
+                                </div>
+                            `;
+                    });
+                    container.innerHTML = html;
+
+                    document.querySelectorAll('.status-btn').forEach(b => {
+                        b.addEventListener('click', async function(e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            const st = this.dataset.status;
+                            const res = await updateStatus(id, st);
+                            if (!res.success) alert('Ошибка: ' + res.error);
+                        });
+                    });
+                    document.querySelectorAll('.delete-btn').forEach(b => {
+                        b.addEventListener('click', async function(e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            if (confirm('Удалить заявку?')) {
+                                const res = await deleteRequest(id);
+                                if (!res.success) alert('Ошибка: ' + res.error);
+                            }
+                        });
+                    });
+                }, (err) => {
+                    console.error(err);
+                    container.innerHTML =
+                        `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка загрузки: ${err.message}</p>`;
+                });
+        }
+
+        // ================================================================
+        //  ПРЕВЬЮ
+        // ================================================================
+        function renderHomePreview() {
+            const container = document.getElementById('homePreview');
+            db.collection(COLLECTION)
+                .orderBy('createdAt', 'desc')
+                .limit(5)
+                .onSnapshot((snap) => {
+                    if (snap.empty) {
+                        container.innerHTML = `<p class="empty-msg">Пока нет заявок. Станьте первым!</p>`;
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const border = d.status === 'done' ? 'var(--success)' :
+                            d.status === 'inwork' ? 'var(--warning)' : 'var(--accent)';
+                        html += `
+                                <div class="request-item" style="border-left-color:${border};">
+                                    <h3>${escapeHtml(d.topic)}</h3>
+                                    <div class="desc">${escapeHtml(d.description)}</div>
+                                    <div class="meta">
+                                        <span>👤 ${escapeHtml(d.name)}</span>
+                                        <span>🕐 ${formatDate(d.createdAt)}</span>
+                                    </div>
+                                </div>
+                            `;
+                    });
+                    container.innerHTML = html;
+                }, (err) => {
+                    console.error(err);
+                    container.innerHTML = `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка</p>`;
+                });
+        }
+
+        // ================================================================
+        //  ФОРМА
+        // ================================================================
+        document.getElementById('requestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const group = document.getElementById('group').value.trim();
+            const topic = document.getElementById('topic').value.trim();
+            const desc = document.getElementById('description').value.trim();
+            const msgEl = document.getElementById('formMessage');
+            const btn = document.getElementById('submitBtn');
+
+            if (!name || !topic || !desc) {
+                msgEl.style.color = 'var(--danger)';
+                msgEl.textContent = '⚠️ Заполните все поля с *';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Отправка...';
+            msgEl.textContent = '';
+
+            const res = await addRequest(name, group, topic, desc);
+            if (res.success) {
+                this.reset();
+                msgEl.style.color = 'var(--success)';
+                msgEl.textContent = '✅ Заявка отправлена!';
+            } else {
+                msgEl.style.color = 'var(--danger)';
+                msgEl.textContent = '❌ Ошибка: ' + res.error;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '✨ Отправить';
+        });
+
+        // ================================================================
+        //  НАВИГАЦИЯ
+        // ================================================================
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + pageId);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('.nav a').forEach(link => {
+                link.classList.toggle('active', link.dataset.page === pageId);
+            });
+        }
+
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchPage(this.dataset.page);
+            });
+        });
+
+        // ================================================================
+        //  ОЧИСТКА
+        // ================================================================
+        document.getElementById('clearAllBtn').addEventListener('click', async function() {
+            const res = await deleteAllRequests();
+            if (!res.success) alert('Ошибка: ' + res.error);
+        });
+
+        // ================================================================
+        //  СТАРТ
+        // ================================================================
+        renderRequestsList();
+        renderHomePreview();
+    </script>
+
+</body>
+</html>
