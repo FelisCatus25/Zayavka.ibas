@@ -230,50 +230,6 @@
             min-width: 70px;
         }
 
-        .request-item {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 4px solid var(--accent);
-            padding: clamp(0.8rem, 2vw, 1.2rem) clamp(0.8rem, 2vw, 1.6rem);
-            border-radius: 16px;
-            margin-bottom: 0.8rem;
-            transition: var(--transition);
-            border: 1px solid transparent;
-        }
-
-        .request-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--border-color);
-        }
-
-        .request-item h3 {
-            color: var(--text-primary);
-            font-size: clamp(1rem, 2.5vw, 1.15rem);
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .request-item .desc {
-            color: var(--text-secondary);
-            margin: 0.3rem 0 0.6rem;
-            line-height: 1.5;
-            font-size: clamp(0.85rem, 2vw, 0.95rem);
-        }
-
-        .request-item .meta {
-            font-size: clamp(0.7rem, 1.8vw, 0.8rem);
-            color: var(--text-muted);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem 0.8rem;
-        }
-
-        .request-item .meta span {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.15rem 0.7rem;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
         .empty-msg {
             color: var(--text-muted);
             font-style: italic;
@@ -360,23 +316,6 @@
 
         .about-footer strong { color: var(--accent); }
 
-        .loader {
-            display: inline-block;
-            width: 22px;
-            height: 22px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .footer {
             background: rgba(11, 15, 26, 0.9);
             backdrop-filter: blur(12px);
@@ -396,7 +335,6 @@
             .container { padding: 0 0.5rem; margin: 0.8rem auto; }
             .card { padding: 0.8rem; border-radius: 16px; }
             .btn { min-height: 44px; font-size: 0.85rem; }
-            .request-item { padding: 0.6rem 0.8rem; }
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -415,12 +353,12 @@
 
     <nav class="nav">
         <a data-page="home" class="active">🏠 Главная</a>
-        <a data-page="requests">📩 Все заявки</a>
         <a data-page="about">👥 О ЦК КП НРТК(и)</a>
     </nav>
 
     <main class="container">
 
+        <!-- ===== ГЛАВНАЯ ===== -->
         <section id="page-home" class="page active">
             <div class="card">
                 <h2><span class="icon">📝</span> Оставить заявку</h2>
@@ -441,27 +379,9 @@
                 </form>
                 <div id="formMessage" style="margin-top: 1.2rem; font-weight: 600; font-size: clamp(0.85rem, 2vw, 1rem);"></div>
             </div>
-
-            <div class="card">
-                <h2><span class="icon">📊</span> Последние заявки</h2>
-                <div id="homePreview">
-                    <p class="empty-msg">📭 Здесь будут последние заявки</p>
-                </div>
-            </div>
         </section>
 
-        <section id="page-requests" class="page">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
-                    <h2 style="margin-bottom:0;"><span class="icon">📩</span> Все заявки</h2>
-                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить всё</button>
-                </div>
-                <div style="margin-top:1rem;" id="requestsList">
-                    <p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>
-                </div>
-            </div>
-        </section>
-
+        <!-- ===== О НАС ===== -->
         <section id="page-about" class="page">
             <div class="card">
                 <h2><span class="icon">👥</span> Кто мы?</h2>
@@ -576,13 +496,6 @@
                 e.preventDefault();
                 switchPage(this.dataset.page);
             });
-        });
-
-        // ================================================================
-        //  ОЧИСТКА
-        // ================================================================
-        document.getElementById('clearAllBtn').addEventListener('click', function() {
-            alert('📨 Заявки приходят на почту через Formspree.\nОчистить их можно в панели Formspree.');
         });
 
         console.log('🚀 Сайт запущен с Formspree!');
