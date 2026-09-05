@@ -2,19 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>Zayavka.ibas</title>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js">
     </script>
 
     <style>
-        /* ============================================================
-               ROOT — ТЁМНАЯ ТЕМА + НЕОН
-               ============================================================ */
         :root {
             --bg-primary: #0b0f1a;
             --bg-secondary: #131a2b;
@@ -52,21 +48,23 @@
                 radial-gradient(ellipse at 20% 50%, rgba(108, 140, 255, 0.05) 0%, transparent 60%),
                 radial-gradient(ellipse at 80% 20%, rgba(179, 136, 255, 0.05) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 100%, rgba(108, 140, 255, 0.03) 0%, transparent 40%);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* ============================================================
-               ШАПКА
-               ============================================================ */
         .header {
             background: rgba(11, 15, 26, 0.85);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 2rem 2rem 1.5rem;
+            padding: 1.5rem 1.2rem 1.2rem;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header h1 {
-            font-size: 2.4rem;
+            font-size: clamp(1.4rem, 5vw, 2.4rem);
             font-weight: 800;
             background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
             -webkit-background-clip: text;
@@ -80,36 +78,39 @@
         }
 
         .header p {
-            font-size: 1.05rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.05rem);
             color: var(--text-secondary);
             margin-top: 0.2rem;
             font-weight: 400;
         }
 
-        /* ============================================================
-               НАВИГАЦИЯ
-               ============================================================ */
         .nav {
             background: rgba(19, 26, 43, 0.8);
             backdrop-filter: blur(10px);
-            padding: 0.8rem 2rem;
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.6rem 1.2rem;
             display: flex;
             flex-wrap: wrap;
-            gap: 2rem;
+            gap: 1rem;
             border-bottom: 1px solid var(--border-color);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            justify-content: center;
         }
 
         .nav a {
             text-decoration: none;
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 1.05rem;
-            padding: 0.4rem 0.2rem;
+            font-size: clamp(0.85rem, 2vw, 1.05rem);
+            padding: 0.4rem 0.8rem;
             border-bottom: 2px solid transparent;
             transition: var(--transition);
             cursor: pointer;
             position: relative;
+            white-space: nowrap;
         }
 
         .nav a::after {
@@ -139,20 +140,14 @@
             width: 100%;
         }
 
-        /* ============================================================
-               КОНТЕЙНЕР
-               ============================================================ */
         .container {
             flex: 1;
             max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            margin: 1.2rem auto;
+            padding: 0 0.8rem;
             width: 100%;
         }
 
-        /* ============================================================
-               СТРАНИЦЫ
-               ============================================================ */
         .page {
             display: none;
             animation: fadeSlide 0.4s ease;
@@ -173,30 +168,23 @@
             }
         }
 
-        /* ============================================================
-               КАРТОЧКИ (Glassmorphism)
-               ============================================================ */
         .card {
             background: var(--bg-card);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 2rem 2.2rem;
+            padding: clamp(1.2rem, 3vw, 2rem) clamp(1rem, 2.5vw, 2.2rem);
             box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             transition: var(--transition);
-        }
-
-        .card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(108, 140, 255, 0.25);
         }
 
         .card h2 {
             color: var(--text-primary);
-            font-size: 1.6rem;
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
             font-weight: 700;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             letter-spacing: -0.3px;
         }
 
@@ -204,11 +192,8 @@
             margin-right: 0.4rem;
         }
 
-        /* ============================================================
-               ФОРМА
-               ============================================================ */
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
@@ -216,17 +201,17 @@
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 0.3rem;
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 0.8rem 1.2rem;
+            padding: clamp(0.7rem, 2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
             font-family: inherit;
             color: var(--text-primary);
             transition: var(--transition);
@@ -250,23 +235,24 @@
             min-height: 100px;
         }
 
-        /* ============================================================
-               КНОПКИ
-               ============================================================ */
         .btn {
             background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
             color: #fff;
             border: none;
-            padding: 0.8rem 2.4rem;
+            padding: clamp(0.7rem, 2vw, 0.8rem) clamp(1.6rem, 4vw, 2.4rem);
             border-radius: 40px;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             box-shadow: 0 4px 20px var(--accent-glow);
+            touch-action: manipulation;
+            width: 100%;
+            min-height: 48px;
         }
 
         .btn:hover {
@@ -312,34 +298,22 @@
             box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
         }
 
-        .btn-outline {
-            background: transparent;
-            color: var(--accent);
-            border: 1.5px solid var(--accent);
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 8px 32px var(--accent-glow);
-        }
-
         .btn-sm {
-            padding: 0.3rem 1.2rem;
-            font-size: 0.8rem;
+            padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.8rem, 2vw, 1.2rem);
+            font-size: clamp(0.75rem, 1.8vw, 0.85rem);
             border-radius: 30px;
+            width: auto;
+            min-height: 36px;
+            flex: 1;
+            min-width: 70px;
         }
 
-        /* ============================================================
-               ЗАЯВКИ (список)
-               ============================================================ */
         .request-item {
             background: rgba(255, 255, 255, 0.03);
             border-left: 4px solid var(--accent);
-            padding: 1.2rem 1.6rem;
+            padding: clamp(0.8rem, 2vw, 1.2rem) clamp(0.8rem, 2vw, 1.6rem);
             border-radius: 16px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             transition: var(--transition);
             border: 1px solid transparent;
         }
@@ -352,7 +326,7 @@
 
         .request-item h3 {
             color: var(--text-primary);
-            font-size: 1.15rem;
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
             font-weight: 600;
             margin-bottom: 0.2rem;
         }
@@ -361,29 +335,30 @@
             color: var(--text-secondary);
             margin: 0.3rem 0 0.6rem;
             line-height: 1.5;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
         .request-item .meta {
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 1.8vw, 0.8rem);
             color: var(--text-muted);
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem 1.2rem;
+            gap: 0.4rem 0.8rem;
         }
 
         .request-item .meta span {
             background: rgba(255, 255, 255, 0.05);
-            padding: 0.15rem 0.9rem;
+            padding: 0.15rem 0.7rem;
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .request-item .status-badge {
             display: inline-block;
-            padding: 0.15rem 1rem;
+            padding: 0.15rem 0.8rem;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 1.5vw, 0.75rem);
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -410,30 +385,41 @@
             gap: 0.4rem;
         }
 
+        .request-actions .btn-sm {
+            flex: 1 1 auto;
+            min-width: 60px;
+        }
+
         .empty-msg {
             color: var(--text-muted);
             font-style: italic;
             padding: 0.8rem 0;
+            text-align: center;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
         }
 
-        /* ============================================================
-               СТРАНИЦА "О НАС"
-               ============================================================ */
         .about-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
             margin-top: 0.5rem;
+        }
+
+        @media (min-width: 720px) {
+            .about-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         .about-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 2rem 1.8rem 1.8rem;
+            padding: clamp(1.2rem, 3vw, 2rem) clamp(1rem, 2.5vw, 1.8rem);
             text-align: center;
             transition: var(--transition);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .about-card:hover {
@@ -442,10 +428,9 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
         }
 
-        /* ★★★ БЛОК ДЛЯ ФОТО ★★★ */
         .about-photo {
-            width: 140px;
-            height: 140px;
+            width: clamp(100px, 25vw, 140px);
+            height: clamp(100px, 25vw, 140px);
             border-radius: 50%;
             object-fit: cover;
             margin: 0 auto 0.8rem;
@@ -463,40 +448,38 @@
 
         .about-card h3 {
             color: var(--text-primary);
-            font-size: 1.3rem;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
         }
 
         .about-card .role {
             color: var(--accent-secondary);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
             margin: 0.2rem 0 0.5rem;
         }
 
         .about-card p {
             color: var(--text-secondary);
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
         .about-footer {
-            margin-top: 2rem;
-            padding: 1.2rem;
+            margin-top: 1.5rem;
+            padding: clamp(0.8rem, 2vw, 1.2rem);
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             text-align: center;
             color: var(--text-secondary);
             font-weight: 500;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
         .about-footer strong {
             color: var(--accent);
         }
 
-        /* ============================================================
-               ЛОАДЕР
-               ============================================================ */
         .loader {
             display: inline-block;
             width: 22px;
@@ -518,119 +501,99 @@
             }
         }
 
-        /* ============================================================
-               ФУТЕР
-               ============================================================ */
         .footer {
             background: rgba(11, 15, 26, 0.85);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
             text-align: center;
-            padding: 1.2rem;
-            font-size: 0.9rem;
+            padding: 0.8rem 1rem;
+            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
             margin-top: auto;
-        }
-
-        /* ============================================================
-               АДАПТИВ
-               ============================================================ */
-        @media (max-width: 720px) {
-            .about-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav {
-                gap: 1rem;
-                padding: 0.7rem 1.2rem;
-                justify-content: center;
-            }
-
-            .header h1 {
-                font-size: 1.7rem;
-            }
-
-            .card {
-                padding: 1.3rem;
-            }
-
-            .about-photo {
-                width: 110px;
-                height: 110px;
-            }
         }
 
         @media (max-width: 480px) {
             .header {
-                padding: 1.2rem 1rem;
+                padding: 1rem 0.8rem 0.8rem;
             }
-
-            .header h1 {
-                font-size: 1.4rem;
+            .nav {
+                padding: 0.4rem 0.6rem;
+                gap: 0.3rem;
             }
-
-            .container {
-                padding: 0 0.8rem;
-            }
-
             .nav a {
-                font-size: 0.9rem;
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
             }
-
+            .container {
+                padding: 0 0.5rem;
+                margin: 0.8rem auto;
+            }
+            .card {
+                padding: 0.8rem;
+                border-radius: 16px;
+            }
             .btn {
-                padding: 0.6rem 1.6rem;
-                font-size: 0.9rem;
+                min-height: 44px;
+                font-size: 0.85rem;
+            }
+            .request-item {
+                padding: 0.6rem 0.8rem;
+            }
+            .request-actions .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+                min-height: 32px;
+                min-width: 50px;
+                flex: 1 1 30%;
             }
         }
 
-        /* ============================================================
-               SCROLLBAR
-               ============================================================ */
-        ::-webkit-scrollbar {
-            width: 8px;
+        @media (max-width: 380px) {
+            .nav a {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.4rem;
+            }
+            .header h1 {
+                font-size: 1.1rem;
+            }
         }
 
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
         ::-webkit-scrollbar-track {
             background: var(--bg-primary);
         }
-
         ::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 10px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-secondary);
+        input,
+        textarea,
+        button,
+        .btn,
+        .nav a {
+            touch-action: manipulation;
         }
     </style>
 </head>
 <body>
 
-    <!-- ============================================================
-    ШАПКА
-    ============================================================ -->
     <header class="header">
-        <h1><span class="emoji">☭</span>Заявки для Партии</h1>
-        <p>Подавай заявку - мы решаем вопросы!</p>
+        <h1><span class="emoji">☭</span> Заявки для Партии</h1>
+        <p>Подавай заявку — мы решаем вопросы!</p>
     </header>
 
-    <!-- ============================================================
-    НАВИГАЦИЯ
-    ============================================================ -->
     <nav class="nav">
         <a data-page="home" class="active">🏠 Главная</a>
         <a data-page="requests">📩 Все заявки</a>
         <a data-page="about">👥 О ЦК КП НРТК(и)</a>
     </nav>
 
-    <!-- ============================================================
-    КОНТЕНТ
-    ============================================================ -->
     <main class="container">
 
-        <!-- ==========================================================
-        СТРАНИЦА 1 — ГЛАВНАЯ
-        ========================================================== -->
         <section id="page-home" class="page active">
             <div class="card">
                 <h2><span class="icon">📝</span> Оставить заявку</h2>
@@ -649,7 +612,7 @@
                     </div>
                     <button type="submit" class="btn" id="submitBtn">✨ Отправить</button>
                 </form>
-                <div id="formMessage" style="margin-top: 1.2rem; font-weight: 600;"></div>
+                <div id="formMessage" style="margin-top: 1.2rem; font-weight: 600; font-size: clamp(0.85rem, 2vw, 1rem);"></div>
             </div>
 
             <div class="card">
@@ -658,33 +621,25 @@
             </div>
         </section>
 
-        <!-- ==========================================================
-        СТРАНИЦА 2 — ВСЕ ЗАЯВКИ
-        ========================================================== -->
         <section id="page-requests" class="page">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
-                    <h2><span class="icon">📩</span> Все заявки</h2>
-                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить все</button>
+                    <h2 style="margin-bottom:0;"><span class="icon">📩</span> Все заявки</h2>
+                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить</button>
                 </div>
-                <div id="requestsList"><span class="loader"></span> Загрузка...</div>
+                <div style="margin-top:1rem;" id="requestsList"><span class="loader"></span> Загрузка...</div>
             </div>
         </section>
 
-        <!-- ==========================================================
-        СТРАНИЦА 3 — О НАС
-        ========================================================== -->
         <section id="page-about" class="page">
             <div class="card">
                 <h2><span class="icon">👥</span> Кто мы?</h2>
-                <p style="color:var(--text-secondary); font-size:1.05rem; margin-bottom:1.2rem;">
-                    Мы - есть власть, а власть это слуги народа, ваши заявки очень важны для нас
+                <p style="color:var(--text-secondary); font-size:clamp(0.9rem, 2.2vw, 1.05rem); margin-bottom:1.2rem;">
+                    Мы — есть власть, а власть это слуги народа, ваши заявки очень важны для нас
                 </p>
 
                 <div class="about-grid">
-                    <!-- КАРТОЧКА СТАРОСТЫ -->
                     <div class="about-card">
-                        <!-- ★★★ СЮДА ВСТАВЬ СВОЁ ФОТО ★★★ -->
                         <img class="about-photo" src="https://sun9-17.vkuserphoto.ru/s/v1/ig2/IORI_VYUmjqV5V8IaCXFTIAMpz28ZC0iASpklvdavLXIWP9Q2QM27nM2-UButTckpDCNMOEA8HMjQWIgknPjgapU.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&u=cuOJ6TYdh-YuvP1KJedTDVspF0V3rnYP7CoggPK7nVQ&cs=768x0" alt="Фото старосты" />
                         <h3>Староста</h3>
                         <div class="role">⭐ Ответственный за всё</div>
@@ -693,9 +648,7 @@
                         </p>
                     </div>
 
-                    <!-- КАРТОЧКА ЗАМЕСТИТЕЛЯ -->
                     <div class="about-card">
-                        <!-- ★★★ СЮДА ВСТАВЬ ФОТО ДРУГА ★★★ -->
                         <img class="about-photo" src="https://sun9-71.vkuserphoto.ru/s/v1/ig2/_QtRpxxGtVjvqh5sIE7z_Q5Qm8-3rV01l4cnnFaVuVgSLsooC6q-W27BXEW9M4JeOlhcaNK_XZROpLSsMgcnEms1.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&cs=768x0" alt="Фото заместителя" />
                         <h3>Зам. старосты</h3>
                         <div class="role">⚡ Правая рука старосты</div>
@@ -714,20 +667,11 @@
 
     </main>
 
-    <!-- ============================================================
-    ФУТЕР
-    ============================================================ -->
     <footer class="footer">
         © Сайт сделан партией КП НРТК(и)
     </footer>
 
-    <!-- ============================================================
-    JAVASCRIPT
-    ============================================================ -->
     <script>
-        // ================================================================
-        //  FIREBASE КОНФИГ
-        // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC0Nnusx7snGnAW8T-3YzD6p9mJFUi4PSo",
             authDomain: "starosta-requests.firebaseapp.com",
@@ -747,9 +691,6 @@
 
         const COLLECTION = 'requests';
 
-        // ================================================================
-        //  УТИЛИТЫ
-        // ================================================================
         function formatDate(ts) {
             if (!ts) return '—';
             const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -769,13 +710,9 @@
             return div.innerHTML;
         }
 
-        // ================================================================
-        //  CRUD
-        // ================================================================
-        async function addRequest(name, group, topic, desc) {
+        async function addRequest(name, topic, desc) {
             const data = {
                 name: name.trim(),
-                group: group.trim() || 'Не указана',
                 topic: topic.trim(),
                 description: desc.trim(),
                 status: 'new',
@@ -786,7 +723,7 @@
                 await db.collection(COLLECTION).add(data);
                 return { success: true };
             } catch (e) {
-                console.error(e);
+                console.error('Ошибка добавления:', e);
                 return { success: false, error: e.message };
             }
         }
@@ -828,9 +765,6 @@
             }
         }
 
-        // ================================================================
-        //  РЕНДЕР СПИСКА
-        // ================================================================
         function renderRequestsList() {
             const container = document.getElementById('requestsList');
             db.collection(COLLECTION)
@@ -856,7 +790,6 @@
                                     <div class="desc">${escapeHtml(d.description)}</div>
                                     <div class="meta">
                                         <span>👤 ${escapeHtml(d.name)}</span>
-                                        <span>📚 ${escapeHtml(d.group)}</span>
                                         <span>🕐 ${formatDate(d.createdAt)}</span>
                                         <span class="status-badge ${stClass}">${stText}</span>
                                     </div>
@@ -896,9 +829,6 @@
                 });
         }
 
-        // ================================================================
-        //  ПРЕВЬЮ
-        // ================================================================
         function renderHomePreview() {
             const container = document.getElementById('homePreview');
             db.collection(COLLECTION)
@@ -932,13 +862,9 @@
                 });
         }
 
-        // ================================================================
-        //  ФОРМА
-        // ================================================================
         document.getElementById('requestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('name').value.trim();
-            const group = document.getElementById('group').value.trim();
             const topic = document.getElementById('topic').value.trim();
             const desc = document.getElementById('description').value.trim();
             const msgEl = document.getElementById('formMessage');
@@ -954,7 +880,7 @@
             btn.innerHTML = '⏳ Отправка...';
             msgEl.textContent = '';
 
-            const res = await addRequest(name, group, topic, desc);
+            const res = await addRequest(name, topic, desc);
             if (res.success) {
                 this.reset();
                 msgEl.style.color = 'var(--success)';
@@ -967,9 +893,6 @@
             btn.innerHTML = '✨ Отправить';
         });
 
-        // ================================================================
-        //  НАВИГАЦИЯ
-        // ================================================================
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + pageId);
@@ -986,17 +909,11 @@
             });
         });
 
-        // ================================================================
-        //  ОЧИСТКА
-        // ================================================================
         document.getElementById('clearAllBtn').addEventListener('click', async function() {
             const res = await deleteAllRequests();
             if (!res.success) alert('Ошибка: ' + res.error);
         });
 
-        // ================================================================
-        //  СТАРТ
-        // ================================================================
         renderRequestsList();
         renderHomePreview();
     </script>
