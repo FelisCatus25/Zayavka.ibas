@@ -6,7 +6,6 @@
     <title>Заявки для Партии</title>
 
     <style>
-        /* --- СТИЛИ (те же, что были, без изменений) --- */
         :root {
             --bg-primary: #0b0f1a;
             --bg-secondary: #131a2b;
@@ -26,11 +25,7 @@
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -63,10 +58,7 @@
             letter-spacing: -0.5px;
         }
 
-        .header h1 .emoji {
-            -webkit-text-fill-color: initial;
-        }
-
+        .header h1 .emoji { -webkit-text-fill-color: initial; }
         .header p {
             font-size: clamp(0.85rem, 2.5vw, 1.05rem);
             color: var(--text-secondary);
@@ -114,21 +106,10 @@
             transition: var(--transition);
         }
 
-        .nav a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav a:hover::after {
-            width: 100%;
-        }
-
-        .nav a.active {
-            color: var(--text-primary);
-        }
-
-        .nav a.active::after {
-            width: 100%;
-        }
+        .nav a:hover { color: var(--text-primary); }
+        .nav a:hover::after { width: 100%; }
+        .nav a.active { color: var(--text-primary); }
+        .nav a.active::after { width: 100%; }
 
         .container {
             flex: 1;
@@ -138,24 +119,12 @@
             width: 100%;
         }
 
-        .page {
-            display: none;
-            animation: fadeSlide 0.4s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
+        .page { display: none; animation: fadeSlide 0.4s ease; }
+        .page.active { display: block; }
 
         @keyframes fadeSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .card {
@@ -178,14 +147,9 @@
             letter-spacing: -0.3px;
         }
 
-        .card h2 .icon {
-            margin-right: 0.4rem;
-        }
+        .card h2 .icon { margin-right: 0.4rem; }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
+        .form-group { margin-bottom: 1rem; }
         .form-group label {
             display: block;
             font-weight: 600;
@@ -209,9 +173,7 @@
         }
 
         .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--text-muted);
-        }
+        .form-group textarea::placeholder { color: var(--text-muted); }
 
         .form-group input:focus,
         .form-group textarea:focus {
@@ -220,10 +182,7 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
 
         .btn {
             background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
@@ -245,15 +204,8 @@
             min-height: 48px;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px var(--accent-glow);
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+        .btn:active { transform: scale(0.97); }
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -266,9 +218,7 @@
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
         }
 
-        .btn-danger:hover {
-            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.35);
-        }
+        .btn-danger:hover { box-shadow: 0 8px 32px rgba(255, 107, 107, 0.35); }
 
         .btn-sm {
             padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.8rem, 2vw, 1.2rem);
@@ -340,9 +290,7 @@
         }
 
         @media (min-width: 720px) {
-            .about-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .about-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .about-card {
@@ -410,9 +358,7 @@
             font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
-        .about-footer strong {
-            color: var(--accent);
-        }
+        .about-footer strong { color: var(--accent); }
 
         .loader {
             display: inline-block;
@@ -427,12 +373,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .footer {
@@ -448,52 +390,20 @@
         }
 
         @media (max-width: 480px) {
-            .header {
-                padding: 1rem 0.8rem 0.8rem;
-            }
-            .nav {
-                padding: 0.4rem 0.6rem;
-                gap: 0.3rem;
-            }
-            .nav a {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.6rem;
-            }
-            .container {
-                padding: 0 0.5rem;
-                margin: 0.8rem auto;
-            }
-            .card {
-                padding: 0.8rem;
-                border-radius: 16px;
-            }
-            .btn {
-                min-height: 44px;
-                font-size: 0.85rem;
-            }
-            .request-item {
-                padding: 0.6rem 0.8rem;
-            }
+            .header { padding: 1rem 0.8rem 0.8rem; }
+            .nav { padding: 0.4rem 0.6rem; gap: 0.3rem; }
+            .nav a { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+            .container { padding: 0 0.5rem; margin: 0.8rem auto; }
+            .card { padding: 0.8rem; border-radius: 16px; }
+            .btn { min-height: 44px; font-size: 0.85rem; }
+            .request-item { padding: 0.6rem 0.8rem; }
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-        input,
-        textarea,
-        button,
-        .btn,
-        .nav a {
-            touch-action: manipulation;
-        }
+        input, textarea, button, .btn, .nav a { touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -511,7 +421,6 @@
 
     <main class="container">
 
-        <!-- ===== ГЛАВНАЯ ===== -->
         <section id="page-home" class="page active">
             <div class="card">
                 <h2><span class="icon">📝</span> Оставить заявку</h2>
@@ -535,22 +444,24 @@
 
             <div class="card">
                 <h2><span class="icon">📊</span> Последние заявки</h2>
-                <div id="homePreview"><span class="loader"></span> Загрузка...</div>
+                <div id="homePreview">
+                    <p class="empty-msg">📭 Здесь будут последние заявки</p>
+                </div>
             </div>
         </section>
 
-        <!-- ===== ВСЕ ЗАЯВКИ ===== -->
         <section id="page-requests" class="page">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
                     <h2 style="margin-bottom:0;"><span class="icon">📩</span> Все заявки</h2>
                     <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить всё</button>
                 </div>
-                <div style="margin-top:1rem;" id="requestsList"><span class="loader"></span> Загрузка...</div>
+                <div style="margin-top:1rem;" id="requestsList">
+                    <p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>
+                </div>
             </div>
         </section>
 
-        <!-- ===== О НАС ===== -->
         <section id="page-about" class="page">
             <div class="card">
                 <h2><span class="icon">👥</span> Кто мы?</h2>
@@ -593,137 +504,12 @@
 
     <script>
         // ================================================================
-        //  ⚠️ ВСТАВЬ СВОЙ URL СЮДА ⚠️
+        //  ТВОЙ ID ФОРМЫ С FORMPREE
         // ================================================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6QIHslBvDSPlqWx_0vvtIDE-O0O29Lp4-7Pa0yfnjWtug98DYGAk3RcJpD7dTsZAk/exec';
-
-        // ================================================================
-        //  ЗАГРУЗКА ЗАЯВОК (через прокси для обхода CORS)
-        // ================================================================
-        async function loadRequests() {
-            try {
-                // Используем прокси-сервер для обхода CORS
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SCRIPT_URL);
-                const response = await fetch(proxyUrl);
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data && data.error) {
-                    console.error('Ошибка от скрипта:', data.error);
-                    return [];
-                }
-
-                // Если данные — массив, сортируем по дате
-                if (Array.isArray(data) && data.length > 0) {
-                    return data.sort((a, b) => {
-                        const dateA = a['Дата'] || a['date'] || '';
-                        const dateB = b['Дата'] || b['date'] || '';
-                        return new Date(dateB) - new Date(dateA);
-                    });
-                }
-
-                return data || [];
-            } catch (error) {
-                console.error('❌ Ошибка загрузки:', error);
-                return [];
-            }
-        }
+        const FORM_ID = 'mnpqbqlg';
 
         // ================================================================
-        //  ОТПРАВКА ЗАЯВКИ (ПРЯМО)
-        // ================================================================
-        async function sendRequest(name, topic, description) {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ name, topic, description }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result && result.success) {
-                    return { success: true };
-                } else {
-                    return { success: false, message: result?.message || 'Неизвестная ошибка' };
-                }
-            } catch (error) {
-                console.error('❌ Ошибка отправки:', error);
-                return { success: false, message: error.message };
-            }
-        }
-
-        // ================================================================
-        //  РЕНДЕР ЗАЯВОК
-        // ================================================================
-        function renderRequests(requests, container, limit = 0) {
-            if (!requests || requests.length === 0) {
-                container.innerHTML = `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
-                return;
-            }
-
-            const items = limit > 0 ? requests.slice(0, limit) : requests;
-
-            let html = '';
-            items.forEach(req => {
-                const name = req['Имя'] || req['name'] || 'Аноним';
-                const topic = req['Тема'] || req['topic'] || 'Без темы';
-                const description = req['Описание'] || req['description'] || '';
-                const date = req['Дата'] || req['date'] || '';
-
-                html += `
-                        <div class="request-item">
-                            <h3>${escapeHtml(topic)}</h3>
-                            <div class="desc">${escapeHtml(description)}</div>
-                            <div class="meta">
-                                <span>👤 ${escapeHtml(name)}</span>
-                                <span>🕐 ${escapeHtml(date)}</span>
-                            </div>
-                        </div>
-                    `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ================================================================
-        //  ОБНОВЛЕНИЕ ВСЕХ СПИСКОВ
-        // ================================================================
-        async function updateAllLists() {
-            const requestsList = document.getElementById('requestsList');
-            const homePreview = document.getElementById('homePreview');
-
-            requestsList.innerHTML = `<span class="loader"></span> Загрузка...`;
-            homePreview.innerHTML = `<span class="loader"></span> Загрузка...`;
-
-            const requests = await loadRequests();
-
-            // Все заявки
-            renderRequests(requests, requestsList);
-
-            // Последние 5 на главной
-            renderRequests(requests, homePreview, 5);
-        }
-
-        // ================================================================
-        //  ОБРАБОТЧИК ОТПРАВКИ
+        //  ОТПРАВКА ЗАЯВКИ
         // ================================================================
         document.getElementById('requestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -744,16 +530,28 @@
             btn.innerHTML = '⏳ Отправка...';
             msgEl.textContent = '';
 
-            const result = await sendRequest(name, topic, description);
+            try {
+                const response = await fetch(`https://formspree.io/f/${FORM_ID}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ name, topic, description }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
 
-            if (result.success) {
-                this.reset();
-                msgEl.style.color = 'var(--success)';
-                msgEl.textContent = '✅ Заявка отправлена!';
-                await updateAllLists();
-            } else {
+                if (response.ok) {
+                    this.reset();
+                    msgEl.style.color = 'var(--success)';
+                    msgEl.textContent = '✅ Заявка отправлена!';
+                    console.log('✅ Заявка отправлена через Formspree');
+                } else {
+                    const errorData = await response.json();
+                    msgEl.style.color = 'var(--danger)';
+                    msgEl.textContent = '❌ Ошибка: ' + (errorData.error || 'Попробуйте позже');
+                    console.error('❌ Ошибка Formspree:', errorData);
+                }
+            } catch (error) {
                 msgEl.style.color = 'var(--danger)';
-                msgEl.textContent = '❌ Ошибка: ' + (result.message || 'Неизвестная ошибка');
+                msgEl.textContent = '❌ Ошибка соединения: ' + error.message;
+                console.error('❌ Ошибка:', error);
             }
 
             btn.disabled = false;
@@ -784,18 +582,11 @@
         //  ОЧИСТКА
         // ================================================================
         document.getElementById('clearAllBtn').addEventListener('click', function() {
-            alert('❌ Удаление заявок доступно только в Google Таблице.\nОткрой таблицу и удали строки вручную.');
+            alert('📨 Заявки приходят на почту через Formspree.\nОчистить их можно в панели Formspree.');
         });
 
-        // ================================================================
-        //  ЗАПУСК
-        // ================================================================
-        console.log('🚀 Сайт запущен с Google Таблицей!');
-        console.log('📊 Ссылка на скрипт:', SCRIPT_URL);
-        updateAllLists();
-
-        // Обновляем список каждые 10 секунд
-        setInterval(updateAllLists, 10000);
+        console.log('🚀 Сайт запущен с Formspree!');
+        console.log('📧 ID формы:', FORM_ID);
     </script>
 
 </body>
