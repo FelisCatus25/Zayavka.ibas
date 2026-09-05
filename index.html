@@ -6,6 +6,7 @@
     <title>Заявки для Партии</title>
 
     <style>
+        /* --- СТИЛИ (те же, что были, без изменений) --- */
         :root {
             --bg-primary: #0b0f1a;
             --bg-secondary: #131a2b;
@@ -592,52 +593,89 @@
 
     <script>
         // ================================================================
-        //  ТВОЙ НОВЫЙ URL ВЕБ-ПРИЛОЖЕНИЯ (ОБНОВЛЁН)
+        //  ⚠️ ВСТАВЬ СВОЙ URL СЮДА ⚠️
         // ================================================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBf-ynSnkjp-cb2qF_zyGYkxYdgb9dDZVp70MROikZ_xjJmrryjzvFR_URhOcg-A50/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6QIHslBvDSPlqWx_0vvtIDE-O0O29Lp4-7Pa0yfnjWtug98DYGAk3RcJpD7dTsZAk/exec';
 
         // ================================================================
-        //  ЗАГРУЗКА ЗАЯВОК
+        //  ЗАГРУЗКА ЗАЯВОК (через прокси для обхода CORS)
         // ================================================================
         async function loadRequests() {
             try {
-                const response = await fetch(SCRIPT_URL);
+                // Используем прокси-сервер для обхода CORS
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SCRIPT_URL);
+                const response = await fetch(proxyUrl);
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка HTTP: ${response.status}`);
+                }
+
                 const data = await response.json();
 
-                if (data.error) {
+                if (data && data.error) {
                     console.error('Ошибка от скрипта:', data.error);
                     return [];
                 }
 
-                // Если данные — массив, сортируем по дате (сначала новые)
-                if (Array.isArray(data)) {
+                // Если данные — массив, сортируем по дате
+                if (Array.isArray(data) && data.length > 0) {
                     return data.sort((a, b) => {
-                        if (a.Дата && b.Дата) {
-                            return new Date(b.Дата) - new Date(a.Дата);
-                        }
-                        return 0;
+                        const dateA = a['Дата'] || a['date'] || '';
+                        const dateB = b['Дата'] || b['date'] || '';
+                        return new Date(dateB) - new Date(dateA);
                     });
+                }
+
+                return data || [];
+            } catch (error) {
+                console.error('❌ Ошибка загрузки:', error);
+                return [];
+            }
+        }
+
+        // ================================================================
+        //  ОТПРАВКА ЗАЯВКИ (ПРЯМО)
+        // ================================================================
+        async function sendRequest(name, topic, description) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name, topic, description }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result && result.success) {
+                    return { success: true };
                 } else {
-                    console.warn('Неожиданный формат данных:', data);
-                    return [];
+                    return { success: false, message: result?.message || 'Неизвестная ошибка' };
                 }
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                return [];
+                console.error('❌ Ошибка отправки:', error);
+                return { success: false, message: error.message };
             }
         }
 
         // ================================================================
         //  РЕНДЕР ЗАЯВОК
         // ================================================================
-        function renderRequests(requests, container) {
+        function renderRequests(requests, container, limit = 0) {
             if (!requests || requests.length === 0) {
                 container.innerHTML = `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
                 return;
             }
 
+            const items = limit > 0 ? requests.slice(0, limit) : requests;
+
             let html = '';
-            requests.forEach(req => {
+            items.forEach(req => {
                 const name = req['Имя'] || req['name'] || 'Аноним';
                 const topic = req['Тема'] || req['topic'] || 'Без темы';
                 const description = req['Описание'] || req['description'] || '';
@@ -681,23 +719,22 @@
             renderRequests(requests, requestsList);
 
             // Последние 5 на главной
-            const last5 = requests.slice(0, 5);
-            renderRequests(last5, homePreview);
+            renderRequests(requests, homePreview, 5);
         }
 
         // ================================================================
-        //  ОТПРАВКА ЗАЯВКИ
+        //  ОБРАБОТЧИК ОТПРАВКИ
         // ================================================================
         document.getElementById('requestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const name = document.getElementById('name').value.trim();
             const topic = document.getElementById('topic').value.trim();
-            const desc = document.getElementById('description').value.trim();
+            const description = document.getElementById('description').value.trim();
             const msgEl = document.getElementById('formMessage');
             const btn = document.getElementById('submitBtn');
 
-            if (!name || !topic || !desc) {
+            if (!name || !topic || !description) {
                 msgEl.style.color = 'var(--danger)';
                 msgEl.textContent = '⚠️ Заполните все поля с *';
                 return;
@@ -707,36 +744,16 @@
             btn.innerHTML = '⏳ Отправка...';
             msgEl.textContent = '';
 
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        name: name,
-                        topic: topic,
-                        description: desc
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+            const result = await sendRequest(name, topic, description);
 
-                const result = await response.json();
-
-                if (result.success) {
-                    this.reset();
-                    msgEl.style.color = 'var(--success)';
-                    msgEl.textContent = '✅ Заявка отправлена!';
-
-                    // Обновляем список заявок
-                    await updateAllLists();
-                } else {
-                    msgEl.style.color = 'var(--danger)';
-                    msgEl.textContent = '❌ Ошибка: ' + (result.message || 'Неизвестная ошибка');
-                }
-            } catch (error) {
+            if (result.success) {
+                this.reset();
+                msgEl.style.color = 'var(--success)';
+                msgEl.textContent = '✅ Заявка отправлена!';
+                await updateAllLists();
+            } else {
                 msgEl.style.color = 'var(--danger)';
-                msgEl.textContent = '❌ Ошибка соединения: ' + error.message;
-                console.error('❌ Ошибка:', error);
+                msgEl.textContent = '❌ Ошибка: ' + (result.message || 'Неизвестная ошибка');
             }
 
             btn.disabled = false;
@@ -777,7 +794,7 @@
         console.log('📊 Ссылка на скрипт:', SCRIPT_URL);
         updateAllLists();
 
-        // Обновляем список каждые 10 секунд (для синхронизации)
+        // Обновляем список каждые 10 секунд
         setInterval(updateAllLists, 10000);
     </script>
 
