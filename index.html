@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>Zayavka.ibas</title>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js">
-    </script>
+    <title>Заявки для Партии</title>
 
     <style>
         :root {
@@ -275,24 +269,6 @@
             box-shadow: 0 8px 32px rgba(255, 107, 107, 0.35);
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #2b8a3e, #1e7a5e);
-            box-shadow: 0 4px 20px rgba(105, 219, 124, 0.15);
-        }
-
-        .btn-success:hover {
-            box-shadow: 0 8px 32px rgba(105, 219, 124, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #e67700, #d9480f);
-            box-shadow: 0 4px 20px rgba(255, 217, 61, 0.15);
-        }
-
-        .btn-warning:hover {
-            box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
-        }
-
         .btn-sm {
             padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.8rem, 2vw, 1.2rem);
             font-size: clamp(0.75rem, 1.8vw, 0.85rem);
@@ -345,38 +321,6 @@
             padding: 0.15rem 0.7rem;
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .request-item .status-badge {
-            display: inline-block;
-            padding: 0.15rem 0.8rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .status-new {
-            background: rgba(108, 140, 255, 0.2);
-            color: var(--accent);
-        }
-
-        .status-inwork {
-            background: rgba(255, 217, 61, 0.15);
-            color: var(--warning);
-        }
-
-        .status-done {
-            background: rgba(105, 219, 124, 0.15);
-            color: var(--success);
-        }
-
-        .request-actions {
-            margin-top: 0.7rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
         }
 
         .empty-msg {
@@ -529,13 +473,6 @@
             .request-item {
                 padding: 0.6rem 0.8rem;
             }
-            .request-actions .btn-sm {
-                font-size: 0.7rem;
-                padding: 0.2rem 0.6rem;
-                min-height: 32px;
-                min-width: 50px;
-                flex: 1 1 30%;
-            }
         }
 
         ::-webkit-scrollbar {
@@ -573,6 +510,7 @@
 
     <main class="container">
 
+        <!-- ===== ГЛАВНАЯ ===== -->
         <section id="page-home" class="page active">
             <div class="card">
                 <h2><span class="icon">📝</span> Оставить заявку</h2>
@@ -600,16 +538,18 @@
             </div>
         </section>
 
+        <!-- ===== ВСЕ ЗАЯВКИ ===== -->
         <section id="page-requests" class="page">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
                     <h2 style="margin-bottom:0;"><span class="icon">📩</span> Все заявки</h2>
-                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить</button>
+                    <button id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ Очистить всё</button>
                 </div>
                 <div style="margin-top:1rem;" id="requestsList"><span class="loader"></span> Загрузка...</div>
             </div>
         </section>
 
+        <!-- ===== О НАС ===== -->
         <section id="page-about" class="page">
             <div class="card">
                 <h2><span class="icon">👥</span> Кто мы?</h2>
@@ -652,50 +592,70 @@
 
     <script>
         // ================================================================
-        //  КОНФИГУРАЦИЯ FIREBASE
+        //  ТВОЙ НОВЫЙ URL ВЕБ-ПРИЛОЖЕНИЯ (ОБНОВЛЁН)
         // ================================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyC0Nnusx7snGnAW8T-3YzD6p9mJFUi4PSo",
-            authDomain: "starosta-requests.firebaseapp.com",
-            projectId: "starosta-requests",
-            storageBucket: "starosta-requests.firebasestorage.app",
-            messagingSenderId: "437159715612",
-            appId: "1:437159715612:web:74d85acb669b52099790d9",
-            measurementId: "G-ZEG88WM655"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBf-ynSnkjp-cb2qF_zyGYkxYdgb9dDZVp70MROikZ_xjJmrryjzvFR_URhOcg-A50/exec';
 
         // ================================================================
-        //  ВКЛЮЧАЕМ ОФЛАЙН-РЕЖИМ (с обработкой ошибок)
+        //  ЗАГРУЗКА ЗАЯВОК
         // ================================================================
-        db.enablePersistence()
-            .then(() => {
-                console.log('✅ Офлайн-режим включён');
-            })
-            .catch((err) => {
-                console.warn('⚠️ Офлайн-режим НЕ включён:', err.code);
-                if (err.code === 'failed-precondition') {
-                    console.warn('⚠️ Открой сайт в одной вкладке');
+        async function loadRequests() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('Ошибка от скрипта:', data.error);
+                    return [];
                 }
-            });
 
-        const COLLECTION = 'requests';
+                // Если данные — массив, сортируем по дате (сначала новые)
+                if (Array.isArray(data)) {
+                    return data.sort((a, b) => {
+                        if (a.Дата && b.Дата) {
+                            return new Date(b.Дата) - new Date(a.Дата);
+                        }
+                        return 0;
+                    });
+                } else {
+                    console.warn('Неожиданный формат данных:', data);
+                    return [];
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                return [];
+            }
+        }
 
         // ================================================================
-        //  УТИЛИТЫ
+        //  РЕНДЕР ЗАЯВОК
         // ================================================================
-        function formatDate(ts) {
-            if (!ts) return '—';
-            const d = ts.toDate ? ts.toDate() : new Date(ts);
-            return d.toLocaleString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        function renderRequests(requests, container) {
+            if (!requests || requests.length === 0) {
+                container.innerHTML = `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
+                return;
+            }
+
+            let html = '';
+            requests.forEach(req => {
+                const name = req['Имя'] || req['name'] || 'Аноним';
+                const topic = req['Тема'] || req['topic'] || 'Без темы';
+                const description = req['Описание'] || req['description'] || '';
+                const date = req['Дата'] || req['date'] || '';
+
+                html += `
+                        <div class="request-item">
+                            <h3>${escapeHtml(topic)}</h3>
+                            <div class="desc">${escapeHtml(description)}</div>
+                            <div class="meta">
+                                <span>👤 ${escapeHtml(name)}</span>
+                                <span>🕐 ${escapeHtml(date)}</span>
+                            </div>
+                        </div>
+                    `;
             });
+
+            container.innerHTML = html;
         }
 
         function escapeHtml(text) {
@@ -706,191 +666,27 @@
         }
 
         // ================================================================
-        //  ФУНКЦИИ РАБОТЫ С ЗАЯВКАМИ
+        //  ОБНОВЛЕНИЕ ВСЕХ СПИСКОВ
         // ================================================================
-        async function addRequest(name, topic, desc) {
-            try {
-                const data = {
-                    name: name.trim(),
-                    topic: topic.trim(),
-                    description: desc.trim(),
-                    status: 'new',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+        async function updateAllLists() {
+            const requestsList = document.getElementById('requestsList');
+            const homePreview = document.getElementById('homePreview');
 
-                await db.collection(COLLECTION).add(data);
-                return { success: true };
-            } catch (e) {
-                console.error('❌ Ошибка добавления:', e);
-                return { success: false, error: e.message };
-            }
-        }
+            requestsList.innerHTML = `<span class="loader"></span> Загрузка...`;
+            homePreview.innerHTML = `<span class="loader"></span> Загрузка...`;
 
-        async function updateStatus(id, newStatus) {
-            try {
-                await db.collection(COLLECTION).doc(id).update({
-                    status: newStatus,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                return { success: true };
-            } catch (e) {
-                console.error('❌ Ошибка обновления:', e);
-                return { success: false, error: e.message };
-            }
-        }
+            const requests = await loadRequests();
 
-        async function deleteRequest(id) {
-            try {
-                await db.collection(COLLECTION).doc(id).delete();
-                return { success: true };
-            } catch (e) {
-                console.error('❌ Ошибка удаления:', e);
-                return { success: false, error: e.message };
-            }
-        }
+            // Все заявки
+            renderRequests(requests, requestsList);
 
-        async function deleteAllRequests() {
-            if (!confirm('🗑️ Удалить ВСЕ заявки безвозвратно?')) return;
-
-            try {
-                const snap = await db.collection(COLLECTION).get();
-                const batch = db.batch();
-                snap.docs.forEach(d => batch.delete(d.ref));
-                await batch.commit();
-                return { success: true };
-            } catch (e) {
-                console.error('❌ Ошибка удаления всех:', e);
-                return { success: false, error: e.message };
-            }
+            // Последние 5 на главной
+            const last5 = requests.slice(0, 5);
+            renderRequests(last5, homePreview);
         }
 
         // ================================================================
-        //  РЕНДЕР СПИСКА ЗАЯВОК (в реальном времени)
-        // ================================================================
-        let isFirstLoad = true;
-
-        function renderRequestsList() {
-            const container = document.getElementById('requestsList');
-
-            db.collection(COLLECTION)
-                .orderBy('createdAt', 'desc')
-                .onSnapshot((snap) => {
-                    if (isFirstLoad) {
-                        console.log('📩 Загружено заявок:', snap.size);
-                        isFirstLoad = false;
-                    }
-
-                    if (snap.empty) {
-                        container.innerHTML =
-                            `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
-                        return;
-                    }
-
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const id = doc.id;
-                        const statusMap = {
-                            'new': '🟡 Новая',
-                            'inwork': '🔵 В работе',
-                            'done': '✅ Готово'
-                        };
-                        const statusClassMap = {
-                            'new': 'status-new',
-                            'inwork': 'status-inwork',
-                            'done': 'status-done'
-                        };
-                        const stText = statusMap[d.status] || d.status;
-                        const stClass = statusClassMap[d.status] || '';
-
-                        html += `
-                                <div class="request-item" data-id="${id}">
-                                    <h3>${escapeHtml(d.topic)}</h3>
-                                    <div class="desc">${escapeHtml(d.description)}</div>
-                                    <div class="meta">
-                                        <span>👤 ${escapeHtml(d.name)}</span>
-                                        <span>🕐 ${formatDate(d.createdAt)}</span>
-                                        <span class="status-badge ${stClass}">${stText}</span>
-                                    </div>
-                                    <div class="request-actions">
-                                        <button class="btn btn-warning btn-sm status-btn" data-id="${id}" data-status="inwork">📌 В работу</button>
-                                        <button class="btn btn-success btn-sm status-btn" data-id="${id}" data-status="done">✅ Готово</button>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${id}">🗑️ Удалить</button>
-                                    </div>
-                                </div>
-                            `;
-                    });
-                    container.innerHTML = html;
-
-                    // Обработчики для кнопок
-                    document.querySelectorAll('.status-btn').forEach(b => {
-                        b.addEventListener('click', async function(e) {
-                            e.stopPropagation();
-                            const id = this.dataset.id;
-                            const st = this.dataset.status;
-                            const res = await updateStatus(id, st);
-                            if (!res.success) alert('Ошибка: ' + res.error);
-                        });
-                    });
-
-                    document.querySelectorAll('.delete-btn').forEach(b => {
-                        b.addEventListener('click', async function(e) {
-                            e.stopPropagation();
-                            const id = this.dataset.id;
-                            if (confirm('Удалить заявку?')) {
-                                const res = await deleteRequest(id);
-                                if (!res.success) alert('Ошибка: ' + res.error);
-                            }
-                        });
-                    });
-                }, (err) => {
-                    console.error('❌ Ошибка подписки:', err);
-                    container.innerHTML =
-                        `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка загрузки: ${err.message}</p>`;
-                });
-        }
-
-        // ================================================================
-        //  ПРЕВЬЮ НА ГЛАВНОЙ
-        // ================================================================
-        function renderHomePreview() {
-            const container = document.getElementById('homePreview');
-
-            db.collection(COLLECTION)
-                .orderBy('createdAt', 'desc')
-                .limit(5)
-                .onSnapshot((snap) => {
-                    if (snap.empty) {
-                        container.innerHTML = `<p class="empty-msg">Пока нет заявок. Станьте первым!</p>`;
-                        return;
-                    }
-
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const border = d.status === 'done' ? 'var(--success)' :
-                            d.status === 'inwork' ? 'var(--warning)' : 'var(--accent)';
-                        html += `
-                                <div class="request-item" style="border-left-color:${border};">
-                                    <h3>${escapeHtml(d.topic)}</h3>
-                                    <div class="desc">${escapeHtml(d.description)}</div>
-                                    <div class="meta">
-                                        <span>👤 ${escapeHtml(d.name)}</span>
-                                        <span>🕐 ${formatDate(d.createdAt)}</span>
-                                    </div>
-                                </div>
-                            `;
-                    });
-                    container.innerHTML = html;
-                }, (err) => {
-                    console.error('❌ Ошибка превью:', err);
-                    container.innerHTML = `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка</p>`;
-                });
-        }
-
-        // ================================================================
-        //  ОБРАБОТЧИК ОТПРАВКИ ЗАЯВКИ
+        //  ОТПРАВКА ЗАЯВКИ
         // ================================================================
         document.getElementById('requestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -901,33 +697,48 @@
             const msgEl = document.getElementById('formMessage');
             const btn = document.getElementById('submitBtn');
 
-            // Проверка полей
             if (!name || !topic || !desc) {
                 msgEl.style.color = 'var(--danger)';
                 msgEl.textContent = '⚠️ Заполните все поля с *';
                 return;
             }
 
-            // Блокируем кнопку
             btn.disabled = true;
             btn.innerHTML = '⏳ Отправка...';
             msgEl.textContent = '';
 
-            // Отправляем заявку
-            const res = await addRequest(name, topic, desc);
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: name,
+                        topic: topic,
+                        description: desc
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            if (res.success) {
-                this.reset();
-                msgEl.style.color = 'var(--success)';
-                msgEl.textContent = '✅ Заявка отправлена!';
-                console.log('✅ Заявка успешно отправлена в Firebase');
-            } else {
+                const result = await response.json();
+
+                if (result.success) {
+                    this.reset();
+                    msgEl.style.color = 'var(--success)';
+                    msgEl.textContent = '✅ Заявка отправлена!';
+
+                    // Обновляем список заявок
+                    await updateAllLists();
+                } else {
+                    msgEl.style.color = 'var(--danger)';
+                    msgEl.textContent = '❌ Ошибка: ' + (result.message || 'Неизвестная ошибка');
+                }
+            } catch (error) {
                 msgEl.style.color = 'var(--danger)';
-                msgEl.textContent = '❌ Ошибка: ' + res.error;
-                console.error('❌ Ошибка отправки:', res.error);
+                msgEl.textContent = '❌ Ошибка соединения: ' + error.message;
+                console.error('❌ Ошибка:', error);
             }
 
-            // Разблокируем кнопку
             btn.disabled = false;
             btn.innerHTML = '✨ Отправить';
         });
@@ -953,19 +764,21 @@
         });
 
         // ================================================================
-        //  ОЧИСТКА ВСЕХ ЗАЯВОК
+        //  ОЧИСТКА
         // ================================================================
-        document.getElementById('clearAllBtn').addEventListener('click', async function() {
-            const res = await deleteAllRequests();
-            if (!res.success) alert('Ошибка: ' + res.error);
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            alert('❌ Удаление заявок доступно только в Google Таблице.\nОткрой таблицу и удали строки вручную.');
         });
 
         // ================================================================
         //  ЗАПУСК
         // ================================================================
-        console.log('🚀 Сайт запущен!');
-        renderRequestsList();
-        renderHomePreview();
+        console.log('🚀 Сайт запущен с Google Таблицей!');
+        console.log('📊 Ссылка на скрипт:', SCRIPT_URL);
+        updateAllLists();
+
+        // Обновляем список каждые 10 секунд (для синхронизации)
+        setInterval(updateAllLists, 10000);
     </script>
 
 </body>
