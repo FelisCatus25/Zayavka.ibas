@@ -213,23 +213,6 @@
             box-shadow: none;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #e03131, #c92a2a);
-            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
-        }
-
-        .btn-danger:hover { box-shadow: 0 8px 32px rgba(255, 107, 107, 0.35); }
-
-        .btn-sm {
-            padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.8rem, 2vw, 1.2rem);
-            font-size: clamp(0.75rem, 1.8vw, 0.85rem);
-            border-radius: 30px;
-            width: auto;
-            min-height: 36px;
-            flex: 1;
-            min-width: 70px;
-        }
-
         .empty-msg {
             color: var(--text-muted);
             font-style: italic;
@@ -240,13 +223,13 @@
 
         .about-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-top: 0.5rem;
         }
 
-        @media (min-width: 720px) {
-            .about-grid { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 720px) {
+            .about-grid { grid-template-columns: 1fr; }
         }
 
         .about-card {
@@ -384,12 +367,13 @@
         <!-- ===== О НАС ===== -->
         <section id="page-about" class="page">
             <div class="card">
-                <h2><span class="icon">👥</span> Кто мы?</h2>
+                <h2><span class="icon">👥</span> ЦК КП НРТК(и)</h2>
                 <p style="color:var(--text-secondary); font-size:clamp(0.9rem, 2.2vw, 1.05rem); margin-bottom:1.2rem;">
                     Мы — есть власть, а власть это слуги народа, ваши заявки очень важны для нас
                 </p>
 
                 <div class="about-grid">
+                    <!-- 1. Староста -->
                     <div class="about-card">
                         <img class="about-photo" src="https://sun9-17.vkuserphoto.ru/s/v1/ig2/IORI_VYUmjqV5V8IaCXFTIAMpz28ZC0iASpklvdavLXIWP9Q2QM27nM2-UButTckpDCNMOEA8HMjQWIgknPjgapU.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&u=cuOJ6TYdh-YuvP1KJedTDVspF0V3rnYP7CoggPK7nVQ&cs=768x0" alt="Фото старосты" />
                         <h3>Староста</h3>
@@ -399,12 +383,35 @@
                         </p>
                     </div>
 
+                    <!-- 2. Зам. старосты -->
                     <div class="about-card">
                         <img class="about-photo" src="https://sun9-71.vkuserphoto.ru/s/v1/ig2/_QtRpxxGtVjvqh5sIE7z_Q5Qm8-3rV01l4cnnFaVuVgSLsooC6q-W27BXEW9M4JeOlhcaNK_XZROpLSsMgcnEms1.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,768x1024&from=bu&cs=768x0" alt="Фото заместителя" />
                         <h3>Зам. старосты</h3>
                         <div class="role">⚡ Правая рука старосты</div>
                         <p>
                             Помогает Старосте как может, что-то делает и хз как ему досталась эта должность.
+                        </p>
+                    </div>
+
+                    <!-- 3. Новый человек 1 -->
+                    <div class="about-card">
+                        <!-- ★★★ СЮДА ВСТАВЬ ССЫЛКУ НА ФОТО ★★★ -->
+                        <img class="about-photo" src="https://via.placeholder.com/140x140/6c8cff/ffffff?text=Член+ЦК" alt="Фото члена ЦК" />
+                        <h3>Имя члена ЦК</h3>
+                        <div class="role">📌 Должность</div>
+                        <p>
+                            Здесь описание этого человека. Что он делает, за что отвечает и какой вклад вносит в работу партии.
+                        </p>
+                    </div>
+
+                    <!-- 4. Новый человек 2 -->
+                    <div class="about-card">
+                        <!-- ★★★ СЮДА ВСТАВЬ ССЫЛКУ НА ФОТО ★★★ -->
+                        <img class="about-photo" src="https://via.placeholder.com/140x140/b388ff/ffffff?text=Член+ЦК" alt="Фото члена ЦК" />
+                        <h3>Имя члена ЦК</h3>
+                        <div class="role">📌 Должность</div>
+                        <p>
+                            Здесь описание этого человека. Что он делает, за что отвечает и какой вклад вносит в работу партии.
                         </p>
                     </div>
                 </div>
