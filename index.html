@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>Zayavka.ibas</title>
 
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js">
@@ -14,19 +15,18 @@
         :root {
             --bg-primary: #0b0f1a;
             --bg-secondary: #131a2b;
-            --bg-card: rgba(22, 32, 52, 0.75);
-            --bg-card-hover: rgba(30, 44, 72, 0.85);
+            --bg-card: rgba(22, 32, 52, 0.85);
             --text-primary: #e8edf5;
             --text-secondary: #94a9c9;
             --text-muted: #5e7496;
             --accent: #6c8cff;
-            --accent-glow: rgba(108, 140, 255, 0.25);
+            --accent-glow: rgba(108, 140, 255, 0.3);
             --accent-secondary: #b388ff;
             --success: #69db7c;
             --warning: #ffd93d;
             --danger: #ff6b6b;
-            --border-color: rgba(108, 140, 255, 0.15);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --border-color: rgba(108, 140, 255, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --radius: 20px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -44,15 +44,10 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(108, 140, 255, 0.05) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(179, 136, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 100%, rgba(108, 140, 255, 0.03) 0%, transparent 40%);
-            -webkit-tap-highlight-color: transparent;
         }
 
         .header {
-            background: rgba(11, 15, 26, 0.85);
+            background: rgba(11, 15, 26, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
@@ -85,7 +80,7 @@
         }
 
         .nav {
-            background: rgba(19, 26, 43, 0.8);
+            background: rgba(19, 26, 43, 0.9);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             padding: 0.6rem 1.2rem;
@@ -160,11 +155,11 @@
         @keyframes fadeSlide {
             0% {
                 opacity: 0;
-                transform: translateY(20px) scale(0.98);
+                transform: translateY(20px);
             }
             100% {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
@@ -256,7 +251,7 @@
         }
 
         .btn:hover {
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-2px);
             box-shadow: 0 8px 32px var(--accent-glow);
         }
 
@@ -321,7 +316,6 @@
         .request-item:hover {
             background: rgba(255, 255, 255, 0.06);
             border-color: var(--border-color);
-            transform: translateX(4px);
         }
 
         .request-item h3 {
@@ -383,11 +377,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.4rem;
-        }
-
-        .request-actions .btn-sm {
-            flex: 1 1 auto;
-            min-width: 60px;
         }
 
         .empty-msg {
@@ -502,7 +491,7 @@
         }
 
         .footer {
-            background: rgba(11, 15, 26, 0.85);
+            background: rgba(11, 15, 26, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid var(--border-color);
@@ -546,16 +535,6 @@
                 min-height: 32px;
                 min-width: 50px;
                 flex: 1 1 30%;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .nav a {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.4rem;
-            }
-            .header h1 {
-                font-size: 1.1rem;
             }
         }
 
@@ -672,6 +651,9 @@
     </footer>
 
     <script>
+        // ================================================================
+        //  КОНФИГУРАЦИЯ FIREBASE
+        // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC0Nnusx7snGnAW8T-3YzD6p9mJFUi4PSo",
             authDomain: "starosta-requests.firebaseapp.com",
@@ -685,12 +667,25 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // ================================================================
+        //  ВКЛЮЧАЕМ ОФЛАЙН-РЕЖИМ (с обработкой ошибок)
+        // ================================================================
         db.enablePersistence()
-            .then(() => console.log('🔥 Офлайн-режим включён'))
-            .catch((err) => console.warn('Офлайн не включён:', err));
+            .then(() => {
+                console.log('✅ Офлайн-режим включён');
+            })
+            .catch((err) => {
+                console.warn('⚠️ Офлайн-режим НЕ включён:', err.code);
+                if (err.code === 'failed-precondition') {
+                    console.warn('⚠️ Открой сайт в одной вкладке');
+                }
+            });
 
         const COLLECTION = 'requests';
 
+        // ================================================================
+        //  УТИЛИТЫ
+        // ================================================================
         function formatDate(ts) {
             if (!ts) return '—';
             const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -710,20 +705,24 @@
             return div.innerHTML;
         }
 
+        // ================================================================
+        //  ФУНКЦИИ РАБОТЫ С ЗАЯВКАМИ
+        // ================================================================
         async function addRequest(name, topic, desc) {
-            const data = {
-                name: name.trim(),
-                topic: topic.trim(),
-                description: desc.trim(),
-                status: 'new',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
             try {
+                const data = {
+                    name: name.trim(),
+                    topic: topic.trim(),
+                    description: desc.trim(),
+                    status: 'new',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
                 await db.collection(COLLECTION).add(data);
                 return { success: true };
             } catch (e) {
-                console.error('Ошибка добавления:', e);
+                console.error('❌ Ошибка добавления:', e);
                 return { success: false, error: e.message };
             }
         }
@@ -736,7 +735,7 @@
                 });
                 return { success: true };
             } catch (e) {
-                console.error(e);
+                console.error('❌ Ошибка обновления:', e);
                 return { success: false, error: e.message };
             }
         }
@@ -746,13 +745,14 @@
                 await db.collection(COLLECTION).doc(id).delete();
                 return { success: true };
             } catch (e) {
-                console.error(e);
+                console.error('❌ Ошибка удаления:', e);
                 return { success: false, error: e.message };
             }
         }
 
         async function deleteAllRequests() {
             if (!confirm('🗑️ Удалить ВСЕ заявки безвозвратно?')) return;
+
             try {
                 const snap = await db.collection(COLLECTION).get();
                 const batch = db.batch();
@@ -760,27 +760,47 @@
                 await batch.commit();
                 return { success: true };
             } catch (e) {
-                console.error(e);
+                console.error('❌ Ошибка удаления всех:', e);
                 return { success: false, error: e.message };
             }
         }
 
+        // ================================================================
+        //  РЕНДЕР СПИСКА ЗАЯВОК (в реальном времени)
+        // ================================================================
+        let isFirstLoad = true;
+
         function renderRequestsList() {
             const container = document.getElementById('requestsList');
+
             db.collection(COLLECTION)
                 .orderBy('createdAt', 'desc')
                 .onSnapshot((snap) => {
+                    if (isFirstLoad) {
+                        console.log('📩 Загружено заявок:', snap.size);
+                        isFirstLoad = false;
+                    }
+
                     if (snap.empty) {
                         container.innerHTML =
                             `<p class="empty-msg">📭 Пока нет ни одной заявки. Будьте первым!</p>`;
                         return;
                     }
+
                     let html = '';
                     snap.forEach(doc => {
                         const d = doc.data();
                         const id = doc.id;
-                        const statusMap = { 'new': '🟡 Новая', 'inwork': '🔵 В работе', 'done': '✅ Готово' };
-                        const statusClassMap = { 'new': 'status-new', 'inwork': 'status-inwork', 'done': 'status-done' };
+                        const statusMap = {
+                            'new': '🟡 Новая',
+                            'inwork': '🔵 В работе',
+                            'done': '✅ Готово'
+                        };
+                        const statusClassMap = {
+                            'new': 'status-new',
+                            'inwork': 'status-inwork',
+                            'done': 'status-done'
+                        };
                         const stText = statusMap[d.status] || d.status;
                         const stClass = statusClassMap[d.status] || '';
 
@@ -803,6 +823,7 @@
                     });
                     container.innerHTML = html;
 
+                    // Обработчики для кнопок
                     document.querySelectorAll('.status-btn').forEach(b => {
                         b.addEventListener('click', async function(e) {
                             e.stopPropagation();
@@ -812,6 +833,7 @@
                             if (!res.success) alert('Ошибка: ' + res.error);
                         });
                     });
+
                     document.querySelectorAll('.delete-btn').forEach(b => {
                         b.addEventListener('click', async function(e) {
                             e.stopPropagation();
@@ -823,14 +845,18 @@
                         });
                     });
                 }, (err) => {
-                    console.error(err);
+                    console.error('❌ Ошибка подписки:', err);
                     container.innerHTML =
                         `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка загрузки: ${err.message}</p>`;
                 });
         }
 
+        // ================================================================
+        //  ПРЕВЬЮ НА ГЛАВНОЙ
+        // ================================================================
         function renderHomePreview() {
             const container = document.getElementById('homePreview');
+
             db.collection(COLLECTION)
                 .orderBy('createdAt', 'desc')
                 .limit(5)
@@ -839,6 +865,7 @@
                         container.innerHTML = `<p class="empty-msg">Пока нет заявок. Станьте первым!</p>`;
                         return;
                     }
+
                     let html = '';
                     snap.forEach(doc => {
                         const d = doc.data();
@@ -857,46 +884,62 @@
                     });
                     container.innerHTML = html;
                 }, (err) => {
-                    console.error(err);
+                    console.error('❌ Ошибка превью:', err);
                     container.innerHTML = `<p class="empty-msg" style="color:var(--danger);">⚠️ Ошибка</p>`;
                 });
         }
 
+        // ================================================================
+        //  ОБРАБОТЧИК ОТПРАВКИ ЗАЯВКИ
+        // ================================================================
         document.getElementById('requestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
             const name = document.getElementById('name').value.trim();
             const topic = document.getElementById('topic').value.trim();
             const desc = document.getElementById('description').value.trim();
             const msgEl = document.getElementById('formMessage');
             const btn = document.getElementById('submitBtn');
 
+            // Проверка полей
             if (!name || !topic || !desc) {
                 msgEl.style.color = 'var(--danger)';
                 msgEl.textContent = '⚠️ Заполните все поля с *';
                 return;
             }
 
+            // Блокируем кнопку
             btn.disabled = true;
             btn.innerHTML = '⏳ Отправка...';
             msgEl.textContent = '';
 
+            // Отправляем заявку
             const res = await addRequest(name, topic, desc);
+
             if (res.success) {
                 this.reset();
                 msgEl.style.color = 'var(--success)';
                 msgEl.textContent = '✅ Заявка отправлена!';
+                console.log('✅ Заявка успешно отправлена в Firebase');
             } else {
                 msgEl.style.color = 'var(--danger)';
                 msgEl.textContent = '❌ Ошибка: ' + res.error;
+                console.error('❌ Ошибка отправки:', res.error);
             }
+
+            // Разблокируем кнопку
             btn.disabled = false;
             btn.innerHTML = '✨ Отправить';
         });
 
+        // ================================================================
+        //  НАВИГАЦИЯ
+        // ================================================================
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active');
+
             document.querySelectorAll('.nav a').forEach(link => {
                 link.classList.toggle('active', link.dataset.page === pageId);
             });
@@ -909,11 +952,18 @@
             });
         });
 
+        // ================================================================
+        //  ОЧИСТКА ВСЕХ ЗАЯВОК
+        // ================================================================
         document.getElementById('clearAllBtn').addEventListener('click', async function() {
             const res = await deleteAllRequests();
             if (!res.success) alert('Ошибка: ' + res.error);
         });
 
+        // ================================================================
+        //  ЗАПУСК
+        // ================================================================
+        console.log('🚀 Сайт запущен!');
         renderRequestsList();
         renderHomePreview();
     </script>
